@@ -1,6 +1,13 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
 import { AppComponent } from './app/app.component';
+import { appReducer } from './app/state/reducers/app.reducer';
+import { AppEffects } from './app/state//effects/app.effects';
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideStore({ app: appReducer }),
+    provideEffects([AppEffects]),
+  ]
+}).catch(err => console.error(err));
