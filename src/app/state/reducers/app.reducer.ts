@@ -1,21 +1,25 @@
-import { createReducer, on, Action } from '@ngrx/store';
-import { loadItems, loadItemsSuccess, loadItemsFailure } from '../actions/app.actions';
-
-export interface AppState {
-  items: any[];
-  error: any;
-}
-
-export const initialState: AppState = {
-  items: [],
-  error: null
-};
+import { Action, createReducer, on } from '@ngrx/store';
+import { addElement, updateElement, deleteElement, loadElementsSuccess } from '../actions/app.actions';
+import { AppState, initialState } from '../app.state';
 
 const _appReducer = createReducer(
   initialState,
-  on(loadItems, state => ({ ...state })),
-  on(loadItemsSuccess, (state, { items }) => ({ ...state, items })),
-  on(loadItemsFailure, (state, { error }) => ({ ...state, error }))
+  on(addElement, (state, { element }) => ({
+    ...state,
+    elements: [...state.elements, element]
+  })),
+  on(updateElement, (state, { element }) => ({
+    ...state,
+    elements: state.elements.map(el => el.type === element.type ? element : el)
+  })),
+  on(deleteElement, (state, { elementId }) => ({
+    ...state,
+    elements: state.elements.filter((el, index) => index !== elementId)
+  })),
+  on(loadElementsSuccess, (state, { elements }) => ({
+    ...state,
+    elements
+  }))
 );
 
 export function appReducer(state: AppState | undefined, action: Action) {

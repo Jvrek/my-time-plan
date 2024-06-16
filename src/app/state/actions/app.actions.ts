@@ -1,5 +1,8 @@
 import { createAction, props } from '@ngrx/store';
+import { ElementConfig } from '../../shared/models/element.config';
 
-export const loadItems = createAction('[App] Load Items');
-export const loadItemsSuccess = createAction('[App] Load Items Success', props<{ items: any[] }>());
-export const loadItemsFailure = createAction('[App] Load Items Failure', props<{ error: any }>());
+export const addElement = createAction('[App] Add Element', props<{ element: ElementConfig }>());
+export const updateElement = createAction('[App] Update Element', props<{ element: ElementConfig }>());
+export const deleteElement = createAction('[App] Delete Element', props<{ elementId: number }>());
+export const loadElements = createAction('[App] Load Elements');
+export const loadElementsSuccess = createAction('[App] Load Elements Success', props<{ elements: ElementConfig[] }>());
