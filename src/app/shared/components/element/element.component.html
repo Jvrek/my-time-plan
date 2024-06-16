@@ -1,0 +1,13 @@
+<mat-card>
+  <div class="ep"></div>
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="config.name">
+  </mat-form-field>
+  <div *ngFor="let input of inputs; let i = index">
+    <mat-form-field>
+      <mat-label>Input {{i + 1}}</mat-label>
+      <input matInput [(ngModel)]="config.inputs[i]">
+    </mat-form-field>
+  </div>
+</mat-card>
