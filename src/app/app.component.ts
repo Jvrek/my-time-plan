@@ -6,11 +6,12 @@ import { JsPlumbDirective } from './shared/directives/jsplumb.directive';
 import { AppState } from './state/app.state';
 import { addElement, loadElements, deleteElement, addConnection, deleteConnectionsByElement, updateElement } from './state/actions/app.actions';
 import { Element } from './shared/models/element.config';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ElementComponent, JsPlumbDirective],
+  imports: [CommonModule, ElementComponent, JsPlumbDirective, MatButtonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -88,8 +89,12 @@ export class AppComponent implements OnInit, AfterViewInit {
       const targetId = elementId;
 
       if (sourceId && targetId && this.canConnect(sourceId, targetId)) {
-        this.store.dispatch(addConnection({ sourceId, targetId }));
-        console.log('Connection added between:', sourceId, targetId);
+        if (!this.isConnectionExist(sourceId, targetId)) {
+          this.store.dispatch(addConnection({ sourceId, targetId }));
+          console.log('Connection added between:', sourceId, targetId);
+        } else {
+          console.log('Connection already exists between:', sourceId, targetId);
+        }
         this.sourceElement = null;
       } else {
         console.error('Cannot connect these elements');
@@ -98,7 +103,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  canConnect(sourceId: string, targetId: string): boolean {
+  private isConnectionExist(sourceId: string, targetId: string): boolean {
+    return this.connections.some(conn =>
+      (conn.sourceId === sourceId && conn.targetId === targetId) ||
+      (conn.sourceId === targetId && conn.targetId === sourceId)
+    );
+  }
+
+  private canConnect(sourceId: string, targetId: string): boolean {
     const source = this.getElementById(sourceId);
     const target = this.getElementById(targetId);
     if (source && target) {
@@ -108,7 +120,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  getElementId(element: HTMLElement): string | undefined {
+  private getElementId(element: HTMLElement): string | undefined {
     const elements = Array.from(this.containerElement?.querySelectorAll('mat-card') || []);
     const index = elements.indexOf(element);
     if (index !== -1 && index < elements.length) {
@@ -117,13 +129,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  getElements(): Element[] {
+  private getElements(): Element[] {
     let elements: Element[] = [];
     this.elements$.subscribe(el => elements = el);
     return elements;
   }
 
-  getElementById(id: string): Element | undefined {
+  private getElementById(id: string): Element | undefined {
     const elements = this.getElements();
     return elements.find(el => el.id === id);
   }

@@ -1,13 +1,29 @@
-<mat-card [id]="config.id">
+<mat-card [id]="config.id" [ngClass]="getCardClass()">
   <div class="ep">{{ config.type }}</div>
   <mat-card-content>
     <mat-form-field>
       <input matInput [ngModel]="config.name" (ngModelChange)="updateName($event)" placeholder="Name">
     </mat-form-field>
-    <div *ngFor="let input of config.inputs; let i = index">
+    <div>
+      <div *ngIf="config.type === 'type1'">
       <mat-form-field>
-        <input matInput [ngModel]="input" (ngModelChange)="updateInput($event, i)" placeholder="Input {{i + 1}}">
+        <input matInput [ngModel]="config.inputs[0]" (ngModelChange)="updateInput($event, 0)" placeholder="Input 1">
       </mat-form-field>
+      <br/>
+      <mat-form-field>
+        <input matInput [ngModel]="config.inputs[1]" (ngModelChange)="updateInput($event, 1)" placeholder="Input 2">
+      </mat-form-field>
+      </div>
+    <div *ngIf="config.type === 'type2'">
+      <mat-form-field>
+        <input matInput [ngModel]="config.inputs[0]" (ngModelChange)="updateInput($event, 0)" placeholder="Input 3">
+      </mat-form-field>
+    </div>
+    <div *ngIf="config.type === 'type3'">
+      <mat-form-field>
+        <input matInput [ngModel]="config.inputs[0]" (ngModelChange)="updateInput($event, 0)" placeholder="Input 4">
+      </mat-form-field>
+    </div>
     </div>
     <button mat-raised-button color="warn" (click)="remove()">Remove</button>
     <button mat-raised-button (click)="startConnection()">+</button>

@@ -55,4 +55,8 @@ export class ElementComponent implements OnInit {
   remove() {
     this.removeElement.emit();
   }
+
+  getCardClass(): string {
+    return `${this.config.type}-card`;
+  }
 }
