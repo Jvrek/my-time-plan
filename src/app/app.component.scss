@@ -1,0 +1,16 @@
+.main-container {
+  position: relative;
+  width: 1500px;
+  height: 800px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+
+.element-container {
+  position: absolute;
+  cursor: move;
+}
+
+.buttons {
+  margin-top: 20px;
+}

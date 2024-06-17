@@ -3,6 +3,10 @@
   <button mat-raised-button color="accent" (click)="addElement('type2')">Add Type 2</button>
   <button mat-raised-button color="warn" (click)="addElement('type3')">Add Type 3</button>
 </div>
-<div *ngFor="let element of elements$ | async" class="element-container">
-  <app-element [config]="element"></app-element>
+<div #container class="main-container" >
+  <app-element [appJsPlumb]="containerElement" [connections]="connections" class="element-container" *ngFor="let element of elements$ | async; let i = index"
+               [config]="element"
+               (removeElement)="removeElement(i)"
+               (startConnectionEvent)="handleStartConnection($event)">
+  </app-element>
 </div>
