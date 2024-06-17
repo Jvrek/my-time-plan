@@ -93,47 +93,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  canConnect(sourceId: string, targetId: string): boolean {
-    const source = this.getElementConfigById(sourceId);
-    const target = this.getElementConfigById(targetId);
-    if (source && target) {
-      console.log('Source:', source, 'Target:', target);
-      return source.type !== target.type; // example rule: cannot connect same type
-    }
-    return false;
-  }
-
-  isConnectionExist(sourceId: string, targetId: string): boolean {
-    return this.connections.some(conn =>
-      (conn.sourceId === sourceId && conn.targetId === targetId) ||
-      (conn.sourceId === targetId && conn.targetId === sourceId)
-    );
-  }
-
-  getElementId(element: HTMLElement): string | undefined {
-    const elements = Array.from(this.containerElement?.querySelectorAll('mat-card') || []);
-    const index = elements.indexOf(element);
-    if (index !== -1 && index < elements.length) {
-      return elements[index]?.id;
-    }
-    return undefined;
-  }
-
-  getElements(): Element[] {
-    let elements: Element[] = [];
-    this.elements$.subscribe(el => elements = el);
-    return elements;
-  }
-
-  getElementConfigById(id: string): Element | undefined {
-    const elements = this.getElements();
-    return elements.find(el => el.id === id);
-  }
-
-  generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
-
   updateElement({ id, key, value }: { id: string, key: string, value: any }) {
     const element = this.getElementConfigById(id);
     if (element) {
@@ -144,5 +103,46 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   trackById(index: number, element: Element): string {
     return element.id;
+  }
+
+  private canConnect(sourceId: string, targetId: string): boolean {
+    const source = this.getElementConfigById(sourceId);
+    const target = this.getElementConfigById(targetId);
+    if (source && target) {
+      console.log('Source:', source, 'Target:', target);
+      return source.type !== target.type; // example rule: cannot connect same type
+    }
+    return false;
+  }
+
+  private isConnectionExist(sourceId: string, targetId: string): boolean {
+    return this.connections.some(conn =>
+      (conn.sourceId === sourceId && conn.targetId === targetId) ||
+      (conn.sourceId === targetId && conn.targetId === sourceId)
+    );
+  }
+
+  private getElementId(element: HTMLElement): string | undefined {
+    const elements = Array.from(this.containerElement?.querySelectorAll('mat-card') || []);
+    const index = elements.indexOf(element);
+    if (index !== -1 && index < elements.length) {
+      return elements[index]?.id;
+    }
+    return undefined;
+  }
+
+  private getElements(): Element[] {
+    let elements: Element[] = [];
+    this.elements$.subscribe(el => elements = el);
+    return elements;
+  }
+
+  private getElementConfigById(id: string): Element | undefined {
+    const elements = this.getElements();
+    return elements.find(el => el.id === id);
+  }
+
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9);
   }
 }
