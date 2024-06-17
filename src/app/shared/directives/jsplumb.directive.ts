@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { BrowserJsPlumbInstance, FullOverlaySpec, newInstance } from '@jsplumb/browser-ui';
 
 @Directive({
@@ -18,9 +18,7 @@ export class JsPlumbDirective implements OnInit, OnChanges {
         container: this.container
       });
 
-      const element = this.el.nativeElement;
-      this.instance.manage(element);
-      this.addDragHandlers(element);
+      this.initializeElements();
     } else {
       console.error("Container element not provided");
     }
@@ -77,15 +75,12 @@ export class JsPlumbDirective implements OnInit, OnChanges {
   }
 
   private addDragHandlers(element: HTMLElement): void {
-    let startX = 0, startY = 0;
-    let initialX = 0, initialY = 0;
+    let startX = 0, startY = 0, initialX = 0, initialY = 0;
 
     const mouseDownHandler = (event: MouseEvent) => {
       event.preventDefault();
-      initialX = element.offsetLeft;
-      initialY = element.offsetTop;
-      startX = event.clientX;
-      startY = event.clientY;
+      startX = event.clientX - element.offsetLeft;
+      startY = event.clientY - element.offsetTop;
 
       document.addEventListener('mousemove', mouseMoveHandler);
       document.addEventListener('mouseup', mouseUpHandler);
@@ -95,16 +90,15 @@ export class JsPlumbDirective implements OnInit, OnChanges {
       const dx = event.clientX - startX;
       const dy = event.clientY - startY;
 
-      element.style.left = `${initialX + dx}px`;
-      element.style.top = `${initialY + dy}px`;
+      element.style.left = `${dx}px`;
+      element.style.top = `${dy}px`;
 
-      this.instance?.revalidate(element);
+      this.instance?.repaintEverything();
     };
 
     const mouseUpHandler = () => {
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);
-      this.instance?.revalidate(element);
     };
 
     element.addEventListener('mousedown', mouseDownHandler);
