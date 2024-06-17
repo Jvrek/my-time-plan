@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,11 +19,12 @@ import { Element } from '../../models/element.config';
     CommonModule
   ],
   templateUrl: './element.component.html',
-  styleUrls: ['./element.component.scss']
+  styleUrls: ['./element.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ElementComponent implements OnInit {
   @Input() config!: Element;
-  @Output() removeElement = new EventEmitter<void>();
+  @Output() removeElement = new EventEmitter<string>();
   @Output() startConnectionEvent = new EventEmitter<HTMLElement>();
   @Output() updateElement = new EventEmitter<{ id: string, key: string, value: any }>();
 
@@ -53,7 +54,7 @@ export class ElementComponent implements OnInit {
   }
 
   remove() {
-    this.removeElement.emit();
+    this.removeElement.emit(this.config.id);
   }
 
   getCardClass(): string {

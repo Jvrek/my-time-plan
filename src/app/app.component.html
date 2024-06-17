@@ -4,10 +4,14 @@
   <button mat-raised-button color="warn" (click)="addElement('type3')">Add Type 3</button>
 </div>
 <div #container class="main-container" >
-  <app-element [appJsPlumb]="containerElement" [connections]="connections" class="element-container" *ngFor="let element of elements$ | async; let i = index"
-               [config]="element"
-               (updateElement)="updateElement($event)"
-               (removeElement)="removeElement(element.id)"
-               (startConnectionEvent)="handleStartConnection($event)">
+  <app-element
+    *ngFor="let element of elements$ | async; trackBy: trackById"
+    class="element-container"
+    [appJsPlumb]="containerElement"
+    [connections]="connections"
+    [config]="element"
+    (removeElement)="removeElement(element.id)"
+    (startConnectionEvent)="handleStartConnection($event)"
+    (updateElement)="updateElement($event)">
   </app-element>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { ElementComponent } from './shared/components/element/element.component';
@@ -13,7 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [CommonModule, ElementComponent, JsPlumbDirective, MatButtonModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('container', { static: true }) container: ElementRef | null = null;
@@ -48,8 +49,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   addElement(type: 'type1' | 'type2' | 'type3') {
-    const newElement = {
-      id: '',
+    const newElement: Element = {
+      id: this.generateId(),
       type,
       name: '',
       inputs: type === 'type1' ? ['', ''] : ['']
@@ -58,18 +59,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.store.dispatch(addElement({ element: newElement }));
   }
 
-  updateElement({ id, key, value }: { id: string, key: string, value: any }) {
-    const element = this.getElementById(id);
-    if (element) {
-      const updatedElement = { ...element, [key]: value };
-      this.store.dispatch(updateElement({ element: updatedElement }));
-    }
-  }
-
-  removeElement(elementId: string | undefined) {
-    if (!elementId) {
-      return;
-    }
+  removeElement(elementId: string) {
     this.store.dispatch(deleteElement({ elementId }));
     this.store.dispatch(deleteConnectionsByElement({ elementId }));
   }
@@ -103,24 +93,24 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private isConnectionExist(sourceId: string, targetId: string): boolean {
+  canConnect(sourceId: string, targetId: string): boolean {
+    const source = this.getElementConfigById(sourceId);
+    const target = this.getElementConfigById(targetId);
+    if (source && target) {
+      console.log('Source:', source, 'Target:', target);
+      return source.type !== target.type; // example rule: cannot connect same type
+    }
+    return false;
+  }
+
+  isConnectionExist(sourceId: string, targetId: string): boolean {
     return this.connections.some(conn =>
       (conn.sourceId === sourceId && conn.targetId === targetId) ||
       (conn.sourceId === targetId && conn.targetId === sourceId)
     );
   }
 
-  private canConnect(sourceId: string, targetId: string): boolean {
-    const source = this.getElementById(sourceId);
-    const target = this.getElementById(targetId);
-    if (source && target) {
-      console.log('Source:', source, 'Target:', target);
-      return source.type !== target.type;
-    }
-    return false;
-  }
-
-  private getElementId(element: HTMLElement): string | undefined {
+  getElementId(element: HTMLElement): string | undefined {
     const elements = Array.from(this.containerElement?.querySelectorAll('mat-card') || []);
     const index = elements.indexOf(element);
     if (index !== -1 && index < elements.length) {
@@ -129,15 +119,30 @@ export class AppComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  private getElements(): Element[] {
+  getElements(): Element[] {
     let elements: Element[] = [];
     this.elements$.subscribe(el => elements = el);
     return elements;
   }
 
-  private getElementById(id: string): Element | undefined {
+  getElementConfigById(id: string): Element | undefined {
     const elements = this.getElements();
     return elements.find(el => el.id === id);
   }
-}
 
+  generateId(): string {
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  updateElement({ id, key, value }: { id: string, key: string, value: any }) {
+    const element = this.getElementConfigById(id);
+    if (element) {
+      const updatedElement = { ...element, [key]: value };
+      this.store.dispatch(updateElement({ element: updatedElement }));
+    }
+  }
+
+  trackById(index: number, element: Element): string {
+    return element.id;
+  }
+}
