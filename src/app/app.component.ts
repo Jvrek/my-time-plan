@@ -30,13 +30,13 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.store.dispatch(loadElements());
     this.elements$.subscribe(elements => {
-      console.log('Elements in store:', elements);
+      console.log('Elements in store:', JSON.stringify(elements));
       if (!Array.isArray(elements)) {
         console.error('Elements is not an array:', elements);
       }
     });
     this.connections$.subscribe(connections => {
-      console.log('Connections in store:', connections);
+      console.log('Connections in store:', JSON.stringify(connections));
       this.connections = connections;
     });
   }
@@ -55,7 +55,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       name: '',
       inputs: type === 'type1' ? ['', ''] : ['']
     };
-    console.log('Dispatching addElement action:', newElement);
+    console.log('Dispatching addElement action:', JSON.stringify(newElement));
     this.store.dispatch(addElement({ element: newElement }));
   }
 
@@ -73,7 +73,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     if (!this.sourceElement) {
       this.sourceElement = element;
-      console.log('Source element selected:', elementId);
+      console.log('Source element selected:', JSON.stringify(elementId));
     } else {
       const sourceId = this.getElementId(this.sourceElement);
       const targetId = elementId;

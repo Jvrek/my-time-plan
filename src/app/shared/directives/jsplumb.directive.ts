@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { BrowserJsPlumbInstance, FullOverlaySpec, newInstance } from '@jsplumb/browser-ui';
 
 @Directive({
@@ -20,6 +20,7 @@ export class JsPlumbDirective implements OnInit, OnChanges {
 
       const element = this.el.nativeElement;
       this.instance.manage(element);
+      this.addDragHandlers(element);
     } else {
       console.error("Container element not provided");
     }
@@ -42,6 +43,7 @@ export class JsPlumbDirective implements OnInit, OnChanges {
     const elements = this.el.nativeElement.children;
     for (let element of elements) {
       this.instance?.manage(element);
+      this.addDragHandlers(element);
     }
   }
 
@@ -72,5 +74,39 @@ export class JsPlumbDirective implements OnInit, OnChanges {
         });
       }
     });
+  }
+
+  private addDragHandlers(element: HTMLElement): void {
+    let startX = 0, startY = 0;
+    let initialX = 0, initialY = 0;
+
+    const mouseDownHandler = (event: MouseEvent) => {
+      event.preventDefault();
+      initialX = element.offsetLeft;
+      initialY = element.offsetTop;
+      startX = event.clientX;
+      startY = event.clientY;
+
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+    };
+
+    const mouseMoveHandler = (event: MouseEvent) => {
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+
+      element.style.left = `${initialX + dx}px`;
+      element.style.top = `${initialY + dy}px`;
+
+      this.instance?.revalidate(element);
+    };
+
+    const mouseUpHandler = () => {
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+      this.instance?.revalidate(element);
+    };
+
+    element.addEventListener('mousedown', mouseDownHandler);
   }
 }
