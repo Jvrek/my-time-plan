@@ -115,7 +115,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     const target = this.getElementById(targetId);
     if (source && target) {
       console.log('Source:', source, 'Target:', target);
-      return source.type !== target.type; // example rule: cannot connect same type
+      return source.type !== target.type;
     }
     return false;
   }
