@@ -1,7 +1,7 @@
-import { ElementConfig } from '../shared/models/element.config';
+import { Element } from '../shared/models/element.config';
 
 export interface AppState {
-  elements: ElementConfig[];
+  elements: Element[];
   connections: { sourceId: string, targetId: string }[];
 };
 

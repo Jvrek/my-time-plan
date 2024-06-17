@@ -5,7 +5,7 @@ import { ElementComponent } from './shared/components/element/element.component'
 import { JsPlumbDirective } from './shared/directives/jsplumb.directive';
 import { AppState } from './state/app.state';
 import { addElement, loadElements, deleteElement, addConnection, deleteConnectionsByElement, updateElement } from './state/actions/app.actions';
-import { ElementConfig } from './shared/models/element.config';
+import { Element } from './shared/models/element.config';
 
 @Component({
   selector: 'app-root',
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   updateElement({ id, key, value }: { id: string, key: string, value: any }) {
-    const element = this.getElementConfigById(id);
+    const element = this.getElementById(id);
     if (element) {
       const updatedElement = { ...element, [key]: value };
       this.store.dispatch(updateElement({ element: updatedElement }));
@@ -99,8 +99,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   canConnect(sourceId: string, targetId: string): boolean {
-    const source = this.getElementConfigById(sourceId);
-    const target = this.getElementConfigById(targetId);
+    const source = this.getElementById(sourceId);
+    const target = this.getElementById(targetId);
     if (source && target) {
       console.log('Source:', source, 'Target:', target);
       return source.type !== target.type; // example rule: cannot connect same type
@@ -117,13 +117,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     return undefined;
   }
 
-  getElements(): ElementConfig[] {
-    let elements: ElementConfig[] = [];
+  getElements(): Element[] {
+    let elements: Element[] = [];
     this.elements$.subscribe(el => elements = el);
     return elements;
   }
 
-  getElementConfigById(id: string): ElementConfig | undefined {
+  getElementById(id: string): Element | undefined {
     const elements = this.getElements();
     return elements.find(el => el.id === id);
   }

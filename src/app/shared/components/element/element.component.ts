@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ElementConfig } from '../../models/element.config';
+import { Element } from '../../models/element.config';
 
 @Component({
   selector: 'app-element',
@@ -22,7 +22,7 @@ import { ElementConfig } from '../../models/element.config';
   styleUrls: ['./element.component.scss']
 })
 export class ElementComponent implements OnInit {
-  @Input() config!: ElementConfig;
+  @Input() config!: Element;
   @Output() removeElement = new EventEmitter<void>();
   @Output() startConnectionEvent = new EventEmitter<HTMLElement>();
   @Output() updateElement = new EventEmitter<{ id: string, key: string, value: any }>();
