@@ -1,15 +1,15 @@
 <mat-card [id]="config.id">
   <div class="ep">{{ config.type }}</div>
-  <mat-form-field>
-    <mat-label>Name</mat-label>
-    <input matInput [(ngModel)]="config.name">
-  </mat-form-field>
-  <div *ngFor="let input of inputs; let i = index">
+  <mat-card-content>
     <mat-form-field>
-      <mat-label>Input {{i + 1}}</mat-label>
-      <input matInput [(ngModel)]="config.inputs[i]">
+      <input matInput [ngModel]="config.name" (ngModelChange)="updateName($event)" placeholder="Name">
     </mat-form-field>
-  </div>
-  <button mat-raised-button color="primary" (click)="startConnection()">+</button>
-  <button mat-raised-button color="warn" (click)="remove()">Usuń</button>
+    <div *ngFor="let input of config.inputs; let i = index">
+      <mat-form-field>
+        <input matInput [ngModel]="input" (ngModelChange)="updateInput($event, i)" placeholder="Input {{i + 1}}">
+      </mat-form-field>
+    </div>
+    <button mat-raised-button color="warn" (click)="remove()">Remove</button>
+    <button mat-raised-button (click)="startConnection()">+</button>
+  </mat-card-content>
 </mat-card>

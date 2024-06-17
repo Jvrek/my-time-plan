@@ -6,7 +6,8 @@
 <div #container class="main-container" >
   <app-element [appJsPlumb]="containerElement" [connections]="connections" class="element-container" *ngFor="let element of elements$ | async; let i = index"
                [config]="element"
-               (removeElement)="removeElement(i)"
+               (updateElement)="updateElement($event)"
+               (removeElement)="removeElement(element.id)"
                (startConnectionEvent)="handleStartConnection($event)">
   </app-element>
 </div>

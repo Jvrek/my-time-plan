@@ -1,25 +1,27 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { addElement, updateElement, deleteElement, loadElementsSuccess, addConnection, deleteConnection } from '../actions/app.actions';
+import { addElement, updateElement, deleteElement, loadElementsSuccess, addConnection, deleteConnection, deleteConnectionsByElement } from '../actions/app.actions';
 import { AppState, initialState } from '../app.state';
 
 const _appReducer = createReducer(
   initialState,
-  on(addElement, (state, { element }) => ({
+  on(loadElementsSuccess, (state, { elements }) => ({
     ...state,
-    elements: [...state.elements, element]
+    elements
   })),
+  on(addElement, (state, { element }) => {
+    const newElement = { ...element, id: generateId() };
+    return {
+      ...state,
+      elements: [...state.elements, newElement]
+    };
+  }),
   on(updateElement, (state, { element }) => ({
     ...state,
     elements: state.elements.map(el => el.id === element.id ? element : el)
   })),
   on(deleteElement, (state, { elementId }) => ({
     ...state,
-    elements: state.elements.filter((el, index) => index !== elementId),
-    connections: state.connections.filter(conn => conn.sourceId !== state.elements[elementId].id && conn.targetId !== state.elements[elementId].id)
-  })),
-  on(loadElementsSuccess, (state, { elements }) => ({
-    ...state,
-    elements
+    elements: state.elements.filter(el => el.id !== elementId)
   })),
   on(addConnection, (state, { sourceId, targetId }) => ({
     ...state,
@@ -28,8 +30,16 @@ const _appReducer = createReducer(
   on(deleteConnection, (state, { sourceId, targetId }) => ({
     ...state,
     connections: state.connections.filter(conn => conn.sourceId !== sourceId || conn.targetId !== targetId)
-  }))
+  })),
+  on(deleteConnectionsByElement, (state, { elementId }) => ({
+    ...state,
+    connections: state.connections.filter(conn => conn.sourceId !== elementId && conn.targetId !== elementId)
+  })),
 );
+
+function generateId(): string {
+  return Math.random().toString(36).substr(2, 9);
+}
 
 export function appReducer(state: AppState | undefined, action: Action) {
   return _appReducer(state, action);

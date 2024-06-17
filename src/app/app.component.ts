@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { ElementComponent } from './shared/components/element/element.component';
 import { JsPlumbDirective } from './shared/directives/jsplumb.directive';
 import { AppState } from './state/app.state';
-import { addElement, loadElements, deleteElement, addConnection } from './state/actions/app.actions';
+import { addElement, loadElements, deleteElement, addConnection, deleteConnectionsByElement, updateElement } from './state/actions/app.actions';
 import { ElementConfig } from './shared/models/element.config';
 
 @Component({
@@ -47,8 +47,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   addElement(type: 'type1' | 'type2' | 'type3') {
-    const newElement: ElementConfig = {
-      id: this.generateId(),
+    const newElement = {
+      id: '',
       type,
       name: '',
       inputs: type === 'type1' ? ['', ''] : ['']
@@ -57,8 +57,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.store.dispatch(addElement({ element: newElement }));
   }
 
-  removeElement(index: number) {
-    this.store.dispatch(deleteElement({ elementId: index }));
+  updateElement({ id, key, value }: { id: string, key: string, value: any }) {
+    const element = this.getElementConfigById(id);
+    if (element) {
+      const updatedElement = { ...element, [key]: value };
+      this.store.dispatch(updateElement({ element: updatedElement }));
+    }
+  }
+
+  removeElement(elementId: string | undefined) {
+    if (!elementId) {
+      return;
+    }
+    this.store.dispatch(deleteElement({ elementId }));
+    this.store.dispatch(deleteConnectionsByElement({ elementId }));
   }
 
   handleStartConnection(element: HTMLElement) {
@@ -115,8 +127,5 @@ export class AppComponent implements OnInit, AfterViewInit {
     const elements = this.getElements();
     return elements.find(el => el.id === id);
   }
-
-  generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
 }
+

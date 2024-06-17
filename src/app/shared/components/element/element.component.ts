@@ -25,6 +25,7 @@ export class ElementComponent implements OnInit {
   @Input() config!: ElementConfig;
   @Output() removeElement = new EventEmitter<void>();
   @Output() startConnectionEvent = new EventEmitter<HTMLElement>();
+  @Output() updateElement = new EventEmitter<{ id: string, key: string, value: any }>();
 
   constructor(private elRef: ElementRef) { }
 
@@ -34,6 +35,16 @@ export class ElementComponent implements OnInit {
 
   get inputs() {
     return this.config.inputs;
+  }
+
+  updateInput(value: string, index: number) {
+    const newInputs = [...this.config.inputs];
+    newInputs[index] = value;
+    this.updateElement.emit({ id: this.config.id, key: 'inputs', value: newInputs });
+  }
+
+  updateName(value: string) {
+    this.updateElement.emit({ id: this.config.id, key: 'name', value });
   }
 
   startConnection() {
